@@ -251,11 +251,23 @@ class MockDataService {
     this.initializeExampleUsers();
     // Inicializar servicios completados de ejemplo para trabajadores
     this.initializeCompletedServices();
+    // Inicializar chats y mensajes de ejemplo
+    this.initializeExampleChats();
   }
 
   private initializeExampleUsers() {
     // Crear usuarios de ejemplo (clientes y trabajadores) si no existen
     const exampleUsers = [
+      // Usuario Cliente Maestre (perfil de prueba fijo)
+      {
+        id: 'maestre',
+        email: 'maestre@test.com',
+        password: '123456',
+        name: 'Maestre',
+        phone: '+1234567800',
+        role: 'client' as const,
+        isVerified: false
+      },
       // Usuario Cliente
       {
         id: 'client1',
@@ -550,6 +562,148 @@ class MockDataService {
 
     // Guardar si se agregaron nuevos servicios
     if (hasNewServices) {
+      this.saveToStorage();
+    }
+  }
+
+  private initializeExampleChats() {
+    const maestreUser = this.users.find(u => u.id === 'maestre');
+    const juanUser = this.users.find(u => u.email === 'juan@example.com');
+    const mariaUser = this.users.find(u => u.email === 'maria@example.com');
+    const carlosUser = this.users.find(u => u.email === 'carlos@example.com');
+
+    if (!maestreUser) return;
+
+    // Función helper para crear mensajes con timestamps realistas
+    const createMessage = (chatId: string, senderId: string, content: string, minutesAgo: number): MockMessage => {
+      const sender = this.getUserById(senderId);
+      const date = new Date();
+      date.setMinutes(date.getMinutes() - minutesAgo);
+      
+      return {
+        _id: `msg_${chatId}_${Date.now()}_${minutesAgo}`,
+        chat: chatId,
+        sender: {
+          _id: sender!.id,
+          name: sender!.name,
+          avatar: sender!.avatar
+        },
+        content,
+        read: minutesAgo > 10, // Mensajes antiguos están leídos
+        createdAt: date.toISOString()
+      };
+    };
+
+    // Chat 1: Maestre con Juan (Plomero)
+    if (juanUser) {
+      const chatId1 = 'chat_maestre_juan';
+      let chat1 = this.chats.find(c => c._id === chatId1);
+      
+      if (!chat1) {
+        chat1 = {
+          _id: chatId1,
+          participants: [
+            { _id: maestreUser.id, name: maestreUser.name, avatar: maestreUser.avatar },
+            { _id: juanUser.id, name: juanUser.name, avatar: juanUser.avatar }
+          ]
+        };
+        this.chats.push(chat1);
+      }
+
+      if (!this.messages[chatId1] || this.messages[chatId1].length === 0) {
+        this.messages[chatId1] = [
+          createMessage(chatId1, maestreUser.id, 'Hola Juan, necesito reparar una fuga de agua en mi baño. ¿Estás disponible?', 120),
+          createMessage(chatId1, juanUser.id, 'Hola Maestre, sí estoy disponible. ¿Podrías darme más detalles sobre la fuga?', 118),
+          createMessage(chatId1, maestreUser.id, 'Es en el grifo del lavabo, está goteando constantemente. Ya intenté apretarlo pero no funcionó.', 115),
+          createMessage(chatId1, juanUser.id, 'Entiendo, probablemente necesite cambiar la válvula. ¿En qué zona vives?', 113),
+          createMessage(chatId1, maestreUser.id, 'Vivo en Ciudad de México, cerca del centro. ¿Cuánto cobrarías?', 110),
+          createMessage(chatId1, juanUser.id, 'Para ese tipo de reparación cobro $30/hora. Normalmente toma entre 2-3 horas, así que serían aproximadamente $75-90 más el costo de la válvula que es como $15.', 108),
+          createMessage(chatId1, maestreUser.id, 'Perfecto, me parece bien. ¿Podrías venir mañana en la tarde?', 105),
+          createMessage(chatId1, juanUser.id, 'Sí, puedo ir mañana a las 3pm. ¿Te funciona esa hora?', 103),
+          createMessage(chatId1, maestreUser.id, 'Perfecto, a las 3pm está bien. Te paso mi dirección por aquí o prefieres que la ponga en la solicitud?', 100),
+          createMessage(chatId1, juanUser.id, 'Puedes ponerla en la solicitud, así queda registrado. Te confirmo mañana antes de ir.', 98),
+          createMessage(chatId1, maestreUser.id, 'Perfecto, gracias. Nos vemos mañana entonces.', 95)
+        ];
+        chat1.lastMessage = { content: this.messages[chatId1][this.messages[chatId1].length - 1].content, createdAt: this.messages[chatId1][this.messages[chatId1].length - 1].createdAt };
+        chat1.lastMessageAt = this.messages[chatId1][this.messages[chatId1].length - 1].createdAt;
+      }
+    }
+
+    // Chat 2: Maestre con María (Carpintera/Pintora)
+    if (mariaUser) {
+      const chatId2 = 'chat_maestre_maria';
+      let chat2 = this.chats.find(c => c._id === chatId2);
+      
+      if (!chat2) {
+        chat2 = {
+          _id: chatId2,
+          participants: [
+            { _id: maestreUser.id, name: maestreUser.name, avatar: maestreUser.avatar },
+            { _id: mariaUser.id, name: mariaUser.name, avatar: mariaUser.avatar }
+          ]
+        };
+        this.chats.push(chat2);
+      }
+
+      if (!this.messages[chatId2] || this.messages[chatId2].length === 0) {
+        this.messages[chatId2] = [
+          createMessage(chatId2, maestreUser.id, 'Hola María, vi tu perfil y me interesa que me hagas una estantería personalizada para mi sala.', 90),
+          createMessage(chatId2, mariaUser.id, 'Hola! Claro, me encantaría ayudarte. ¿Qué medidas necesitas y qué estilo te gusta?', 88),
+          createMessage(chatId2, maestreUser.id, 'Necesito algo de aproximadamente 2 metros de ancho por 1.5 de alto. Me gusta el estilo moderno con madera clara.', 85),
+          createMessage(chatId2, mariaUser.id, 'Perfecto, puedo hacerla en pino o roble claro. El roble es más resistente pero un poco más caro. ¿Cuál prefieres?', 83),
+          createMessage(chatId2, maestreUser.id, '¿Cuál es la diferencia de precio?', 80),
+          createMessage(chatId2, mariaUser.id, 'En pino te saldría alrededor de $400-450, y en roble $550-600. Ambos con acabado de barniz incluido.', 78),
+          createMessage(chatId2, maestreUser.id, 'Creo que voy con el roble entonces, quiero que dure. ¿Cuánto tiempo te tomaría?', 75),
+          createMessage(chatId2, mariaUser.id, 'Aproximadamente 5-7 días hábiles. Puedo empezar la próxima semana si te funciona.', 73),
+          createMessage(chatId2, maestreUser.id, 'Perfecto, la próxima semana está bien. ¿Necesitas venir a tomar medidas?', 70),
+          createMessage(chatId2, mariaUser.id, 'Sí, sería ideal que vaya a ver el espacio. ¿Qué día te viene mejor?', 68),
+          createMessage(chatId2, maestreUser.id, 'El lunes o martes en la tarde me funcionan bien.', 65),
+          createMessage(chatId2, mariaUser.id, 'Perfecto, voy el lunes a las 4pm. Te confirmo el día antes.', 63)
+        ];
+        chat2.lastMessage = { content: this.messages[chatId2][this.messages[chatId2].length - 1].content, createdAt: this.messages[chatId2][this.messages[chatId2].length - 1].createdAt };
+        chat2.lastMessageAt = this.messages[chatId2][this.messages[chatId2].length - 1].createdAt;
+      }
+    }
+
+    // Chat 3: Maestre con Carlos (Electricista)
+    if (carlosUser) {
+      const chatId3 = 'chat_maestre_carlos';
+      let chat3 = this.chats.find(c => c._id === chatId3);
+      
+      if (!chat3) {
+        chat3 = {
+          _id: chatId3,
+          participants: [
+            { _id: maestreUser.id, name: maestreUser.name, avatar: maestreUser.avatar },
+            { _id: carlosUser.id, name: carlosUser.name, avatar: carlosUser.avatar }
+          ]
+        };
+        this.chats.push(chat3);
+      }
+
+      if (!this.messages[chatId3] || this.messages[chatId3].length === 0) {
+        this.messages[chatId3] = [
+          createMessage(chatId3, maestreUser.id, 'Hola Carlos, necesito instalar iluminación LED en mi casa. Vi que tienes mucha experiencia.', 60),
+          createMessage(chatId3, carlosUser.id, 'Hola Maestre! Sí, tengo bastante experiencia con instalaciones LED. ¿Cuántas habitaciones quieres iluminar?', 58),
+          createMessage(chatId3, maestreUser.id, 'Son 3 habitaciones y la sala. Quiero que sea con dimmer para poder regular la intensidad.', 55),
+          createMessage(chatId3, carlosUser.id, 'Perfecto, puedo hacerlo. Para 4 espacios con dimmers, el trabajo completo incluyendo materiales te saldría alrededor de $800-900.', 53),
+          createMessage(chatId3, maestreUser.id, '¿Eso incluye las luces LED también?', 50),
+          createMessage(chatId3, carlosUser.id, 'Sí, incluye las luces LED, los dimmers, cableado y la instalación completa. Todo con garantía de 1 año.', 48),
+          createMessage(chatId3, maestreUser.id, 'Suena bien. ¿Cuánto tiempo te tomaría?', 45),
+          createMessage(chatId3, carlosUser.id, 'Aproximadamente 6-8 horas de trabajo. Puedo hacerlo en un día o dividirlo en dos días si prefieres.', 43),
+          createMessage(chatId3, maestreUser.id, 'Prefiero que sea en un día si es posible. ¿Cuándo podrías venir?', 40),
+          createMessage(chatId3, carlosUser.id, 'Puedo ir este sábado desde las 8am. ¿Te funciona?', 38),
+          createMessage(chatId3, maestreUser.id, 'Perfecto, el sábado a las 8am está bien. ¿Necesitas algo especial de mi parte?', 35),
+          createMessage(chatId3, carlosUser.id, 'Solo que tengas las habitaciones despejadas para trabajar cómodamente. El sábado te confirmo antes de ir.', 33),
+          createMessage(chatId3, maestreUser.id, 'Perfecto, estaré listo. Gracias Carlos!', 30)
+        ];
+        chat3.lastMessage = { content: this.messages[chatId3][this.messages[chatId3].length - 1].content, createdAt: this.messages[chatId3][this.messages[chatId3].length - 1].createdAt };
+        chat3.lastMessageAt = this.messages[chatId3][this.messages[chatId3].length - 1].createdAt;
+      }
+    }
+
+    // Guardar si se crearon nuevos chats o mensajes
+    if (this.chats.length > 0 || Object.keys(this.messages).length > 0) {
       this.saveToStorage();
     }
   }
