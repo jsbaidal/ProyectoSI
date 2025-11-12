@@ -249,11 +249,24 @@ class MockDataService {
     this.loadFromStorage();
     // Inicializar usuarios para trabajadores de ejemplo si no existen
     this.initializeExampleUsers();
+    // Inicializar servicios completados de ejemplo para trabajadores
+    this.initializeCompletedServices();
   }
 
   private initializeExampleUsers() {
-    // Crear usuarios para los trabajadores de ejemplo si no existen
+    // Crear usuarios de ejemplo (clientes y trabajadores) si no existen
     const exampleUsers = [
+      // Usuario Cliente
+      {
+        id: 'client1',
+        email: 'cliente@test.com',
+        password: '123456',
+        name: 'Cliente Ejemplo',
+        phone: '+1234567899',
+        role: 'client' as const,
+        isVerified: false
+      },
+      // Trabajadores
       {
         id: 'user1',
         email: 'juan@example.com',
@@ -296,6 +309,247 @@ class MockDataService {
 
     // Guardar si se agregaron nuevos usuarios
     if (hasNewUsers) {
+      this.saveToStorage();
+    }
+  }
+
+  private initializeCompletedServices() {
+    // Obtener IDs de trabajadores
+    const juanWorker = this.workers.find(w => w.user.email === 'juan@example.com');
+    const mariaWorker = this.workers.find(w => w.user.email === 'maria@example.com');
+    const carlosWorker = this.workers.find(w => w.user.email === 'carlos@example.com');
+    const clientUser = this.users.find(u => u.email === 'cliente@test.com');
+
+    if (!clientUser) return;
+
+    const completedServices: MockService[] = [];
+
+    // Servicios completados para Juan (Plomero/Electricista)
+    if (juanWorker) {
+      const juanServices = [
+        {
+          _id: `service_juan_1_${Date.now()}`,
+          client: clientUser.id,
+          worker: juanWorker._id,
+          trade: 'Plomería',
+          title: 'Reparación de fuga en baño principal',
+          description: 'Reparación de fuga de agua en el grifo del lavabo del baño principal. Se reemplazó la válvula y se sellaron las conexiones.',
+          location: {
+            address: 'Av. Principal 123',
+            city: 'Ciudad de México',
+            state: 'CDMX',
+            coordinates: { lat: 19.4326, lng: -99.1332 }
+          },
+          scheduledDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(), // Hace 30 días
+          estimatedHours: 3,
+          estimatedCost: 3 * juanWorker.hourlyRate,
+          finalCost: 3 * juanWorker.hourlyRate,
+          status: 'completed' as const,
+          paymentStatus: 'paid' as const,
+          createdAt: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString()
+        },
+        {
+          _id: `service_juan_2_${Date.now()}`,
+          client: clientUser.id,
+          worker: juanWorker._id,
+          trade: 'Electricidad',
+          title: 'Instalación de ventilador de techo',
+          description: 'Instalación completa de ventilador de techo en sala, incluyendo cableado eléctrico y montaje.',
+          location: {
+            address: 'Calle Reforma 456',
+            city: 'Ciudad de México',
+            state: 'CDMX',
+            coordinates: { lat: 19.4326, lng: -99.1332 }
+          },
+          scheduledDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(), // Hace 60 días
+          estimatedHours: 4,
+          estimatedCost: 4 * juanWorker.hourlyRate,
+          finalCost: 4 * juanWorker.hourlyRate,
+          status: 'completed' as const,
+          paymentStatus: 'paid' as const,
+          createdAt: new Date(Date.now() - 65 * 24 * 60 * 60 * 1000).toISOString()
+        },
+        {
+          _id: `service_juan_3_${Date.now()}`,
+          client: clientUser.id,
+          worker: juanWorker._id,
+          trade: 'Plomería',
+          title: 'Mantenimiento de sistema de calentador',
+          description: 'Limpieza y mantenimiento preventivo del calentador de agua, revisión de válvulas y conexiones.',
+          location: {
+            address: 'Av. Insurgentes 789',
+            city: 'Ciudad de México',
+            state: 'CDMX',
+            coordinates: { lat: 19.4326, lng: -99.1332 }
+          },
+          scheduledDate: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(), // Hace 90 días
+          estimatedHours: 2,
+          estimatedCost: 2 * juanWorker.hourlyRate,
+          finalCost: 2 * juanWorker.hourlyRate,
+          status: 'completed' as const,
+          paymentStatus: 'paid' as const,
+          createdAt: new Date(Date.now() - 95 * 24 * 60 * 60 * 1000).toISOString()
+        }
+      ];
+      completedServices.push(...juanServices);
+    }
+
+    // Servicios completados para María (Carpintera/Pintora)
+    if (mariaWorker) {
+      const mariaServices = [
+        {
+          _id: `service_maria_1_${Date.now()}`,
+          client: clientUser.id,
+          worker: mariaWorker._id,
+          trade: 'Carpintería',
+          title: 'Construcción de estantería personalizada',
+          description: 'Diseño y construcción de estantería de madera para sala de estar, incluyendo acabados y barniz.',
+          location: {
+            address: 'Calle Juárez 321',
+            city: 'Guadalajara',
+            state: 'Jalisco',
+            coordinates: { lat: 20.6597, lng: -103.3496 }
+          },
+          scheduledDate: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(), // Hace 25 días
+          estimatedHours: 8,
+          estimatedCost: 8 * mariaWorker.hourlyRate,
+          finalCost: 8 * mariaWorker.hourlyRate,
+          status: 'completed' as const,
+          paymentStatus: 'paid' as const,
+          createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+        },
+        {
+          _id: `service_maria_2_${Date.now()}`,
+          client: clientUser.id,
+          worker: mariaWorker._id,
+          trade: 'Pintura',
+          title: 'Pintura completa de interiores',
+          description: 'Pintura de todas las habitaciones de la casa, incluyendo preparación de superficies y aplicación de dos manos.',
+          location: {
+            address: 'Av. López Mateos 654',
+            city: 'Guadalajara',
+            state: 'Jalisco',
+            coordinates: { lat: 20.6597, lng: -103.3496 }
+          },
+          scheduledDate: new Date(Date.now() - 50 * 24 * 60 * 60 * 1000).toISOString(), // Hace 50 días
+          estimatedHours: 12,
+          estimatedCost: 12 * mariaWorker.hourlyRate,
+          finalCost: 12 * mariaWorker.hourlyRate,
+          status: 'completed' as const,
+          paymentStatus: 'paid' as const,
+          createdAt: new Date(Date.now() - 55 * 24 * 60 * 60 * 1000).toISOString()
+        },
+        {
+          _id: `service_maria_3_${Date.now()}`,
+          client: clientUser.id,
+          worker: mariaWorker._id,
+          trade: 'Carpintería',
+          title: 'Reparación de puertas y marcos',
+          description: 'Reparación de 3 puertas que no cerraban correctamente y ajuste de marcos de madera.',
+          location: {
+            address: 'Calle Hidalgo 987',
+            city: 'Guadalajara',
+            state: 'Jalisco',
+            coordinates: { lat: 20.6597, lng: -103.3496 }
+          },
+          scheduledDate: new Date(Date.now() - 75 * 24 * 60 * 60 * 1000).toISOString(), // Hace 75 días
+          estimatedHours: 5,
+          estimatedCost: 5 * mariaWorker.hourlyRate,
+          finalCost: 5 * mariaWorker.hourlyRate,
+          status: 'completed' as const,
+          paymentStatus: 'paid' as const,
+          createdAt: new Date(Date.now() - 80 * 24 * 60 * 60 * 1000).toISOString()
+        }
+      ];
+      completedServices.push(...mariaServices);
+    }
+
+    // Servicios completados para Carlos (Electricista)
+    if (carlosWorker) {
+      const carlosServices = [
+        {
+          _id: `service_carlos_1_${Date.now()}`,
+          client: clientUser.id,
+          worker: carlosWorker._id,
+          trade: 'Electricidad',
+          title: 'Instalación de sistema de iluminación LED',
+          description: 'Instalación completa de sistema de iluminación LED en toda la casa, incluyendo cableado nuevo y conexión a interruptores inteligentes.',
+          location: {
+            address: 'Av. Revolución 147',
+            city: 'Monterrey',
+            state: 'Nuevo León',
+            coordinates: { lat: 25.6866, lng: -100.3161 }
+          },
+          scheduledDate: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(), // Hace 20 días
+          estimatedHours: 10,
+          estimatedCost: 10 * carlosWorker.hourlyRate,
+          finalCost: 10 * carlosWorker.hourlyRate,
+          status: 'completed' as const,
+          paymentStatus: 'paid' as const,
+          createdAt: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString()
+        },
+        {
+          _id: `service_carlos_2_${Date.now()}`,
+          client: clientUser.id,
+          worker: carlosWorker._id,
+          trade: 'Electricidad',
+          title: 'Reparación de cortocircuito en panel eléctrico',
+          description: 'Diagnóstico y reparación de cortocircuito en el panel eléctrico principal, reemplazo de breakers defectuosos.',
+          location: {
+            address: 'Calle Zaragoza 258',
+            city: 'Monterrey',
+            state: 'Nuevo León',
+            coordinates: { lat: 25.6866, lng: -100.3161 }
+          },
+          scheduledDate: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(), // Hace 45 días
+          estimatedHours: 4,
+          estimatedCost: 4 * carlosWorker.hourlyRate,
+          finalCost: 4 * carlosWorker.hourlyRate,
+          status: 'completed' as const,
+          paymentStatus: 'paid' as const,
+          createdAt: new Date(Date.now() - 50 * 24 * 60 * 60 * 1000).toISOString()
+        },
+        {
+          _id: `service_carlos_3_${Date.now()}`,
+          client: clientUser.id,
+          worker: carlosWorker._id,
+          trade: 'Electricidad',
+          title: 'Instalación de tomas eléctricas adicionales',
+          description: 'Instalación de 6 tomas eléctricas nuevas en diferentes habitaciones, cumpliendo con código eléctrico.',
+          location: {
+            address: 'Av. Constitución 369',
+            city: 'Monterrey',
+            state: 'Nuevo León',
+            coordinates: { lat: 25.6866, lng: -100.3161 }
+          },
+          scheduledDate: new Date(Date.now() - 70 * 24 * 60 * 60 * 1000).toISOString(), // Hace 70 días
+          estimatedHours: 6,
+          estimatedCost: 6 * carlosWorker.hourlyRate,
+          finalCost: 6 * carlosWorker.hourlyRate,
+          status: 'completed' as const,
+          paymentStatus: 'paid' as const,
+          createdAt: new Date(Date.now() - 75 * 24 * 60 * 60 * 1000).toISOString()
+        }
+      ];
+      completedServices.push(...carlosServices);
+    }
+
+    // Agregar servicios solo si no existen ya
+    let hasNewServices = false;
+    completedServices.forEach(service => {
+      const exists = this.services.find(s => 
+        s.worker === service.worker && 
+        s.title === service.title &&
+        s.status === 'completed'
+      );
+      if (!exists) {
+        this.services.push(service);
+        hasNewServices = true;
+      }
+    });
+
+    // Guardar si se agregaron nuevos servicios
+    if (hasNewServices) {
       this.saveToStorage();
     }
   }
@@ -507,6 +761,12 @@ class MockDataService {
 
   getServicesByWorker(workerId: string): MockService[] {
     return this.services.filter(s => s.worker === workerId);
+  }
+
+  getCompletedServicesByWorker(workerId: string): MockService[] {
+    return this.services
+      .filter(s => s.worker === workerId && s.status === 'completed')
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }
 
   getServiceById(id: string): MockService | undefined {

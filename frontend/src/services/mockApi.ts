@@ -126,6 +126,23 @@ export const mockApi = {
       };
     }
 
+    if (url === '/api/services/worker/completed') {
+      const userId = localStorage.getItem('userId');
+      if (!userId) throw new Error('No autorizado');
+      const worker = mockDataService.getWorkerByUserId(userId);
+      if (!worker) throw new Error('Trabajador no encontrado');
+      const services = mockDataService.getCompletedServicesByWorker(worker._id);
+      return { 
+        data: { 
+          success: true, 
+          data: { 
+            services, 
+            total: services.length
+          } 
+        } 
+      };
+    }
+
     if (url.startsWith('/api/services/') && !url.includes('/worker') && !url.includes('/me')) {
       const id = url.split('/').pop();
       const service = mockDataService.getServiceById(id!);

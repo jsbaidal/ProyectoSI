@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { mockApi } from '../services/mockApi';
+import { MockService } from '../services/mockData';
 
 const MyProfile: React.FC = () => {
   const { user } = useAuth();
   const [workerProfile, setWorkerProfile] = useState<any>(null);
+  const [completedServices, setCompletedServices] = useState<MockService[]>([]);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -46,13 +48,26 @@ const MyProfile: React.FC = () => {
     }
   }, [user]);
 
+  const fetchCompletedServices = useCallback(async () => {
+    try {
+      const response = await mockApi.get('/api/services/worker/completed');
+      if (response.data.success) {
+        const services = response.data.data.services as MockService[];
+        setCompletedServices(services.slice(0, 3)); // Mostrar solo los 3 más recientes
+      }
+    } catch (error) {
+      console.error('Error al obtener servicios completados:', error);
+    }
+  }, []);
+
   useEffect(() => {
     if (user?.role === 'worker') {
       fetchWorkerProfile();
+      fetchCompletedServices();
     } else {
       setLoading(false);
     }
-  }, [user, fetchWorkerProfile]);
+  }, [user, fetchWorkerProfile, fetchCompletedServices]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,6 +120,82 @@ const MyProfile: React.FC = () => {
             <button onClick={() => setIsEditing(true)} className="btn btn-primary" style={{ marginTop: '20px' }}>
               Editar Perfil
             </button>
+            
+            {/* Historial de Servicios Completados */}
+            {user?.role === 'worker' && completedServices.length > 0 && (
+              <div style={{ marginTop: '40px', paddingTop: '20px', borderTop: '2px solid #e0e0e0' }}>
+                <h2 style={{ marginBottom: '20px', color: '#333', fontSize: '24px' }}>
+                  📋 Historial de Trabajos Completados
+                </h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  {completedServices.map((service) => {
+                    const serviceDate = new Date(service.scheduledDate || service.createdAt);
+                    const formattedDate = serviceDate.toLocaleDateString('es-ES', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    });
+                    
+                    return (
+                      <div
+                        key={service._id}
+                        style={{
+                          padding: '16px',
+                          background: '#f8f9fa',
+                          borderRadius: '8px',
+                          border: '1px solid #e0e0e0',
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                          <div>
+                            <h3 style={{ margin: '0 0 8px 0', color: '#007bff', fontSize: '18px' }}>
+                              {service.title}
+                            </h3>
+                            <p style={{ margin: '0', color: '#666', fontSize: '14px' }}>
+                              <strong>Oficio:</strong> {service.trade}
+                            </p>
+                          </div>
+                          <span
+                            style={{
+                              padding: '4px 12px',
+                              background: '#28a745',
+                              color: 'white',
+                              borderRadius: '12px',
+                              fontSize: '12px',
+                              fontWeight: 'bold'
+                            }}
+                          >
+                            ✅ Completado
+                          </span>
+                        </div>
+                        <p style={{ margin: '8px 0', color: '#495057', fontSize: '14px', lineHeight: '1.5' }}>
+                          {service.description}
+                        </p>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #dee2e6' }}>
+                          <div style={{ fontSize: '13px', color: '#6c757d' }}>
+                            <strong>📅 Fecha:</strong> {formattedDate}
+                          </div>
+                          <div style={{ fontSize: '13px', color: '#6c757d' }}>
+                            <strong>📍 Ubicación:</strong> {service.location?.address}, {service.location?.city}
+                          </div>
+                          {service.finalCost && (
+                            <div style={{ fontSize: '13px', color: '#6c757d' }}>
+                              <strong>💰 Costo Final:</strong> ${service.finalCost.toFixed(2)}
+                            </div>
+                          )}
+                          {service.estimatedHours && (
+                            <div style={{ fontSize: '13px', color: '#6c757d' }}>
+                              <strong>⏱️ Horas:</strong> {service.estimatedHours} hrs
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </>
         ) : (
           <form onSubmit={handleSubmit}>
