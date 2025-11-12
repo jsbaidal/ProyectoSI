@@ -381,56 +381,55 @@ const WorkerProfile: React.FC = () => {
       )}
 
       {user && user.role === 'client' && user.id !== worker.user._id && (
-          <div>
-            <button
-              onClick={() => setShowServiceForm(!showServiceForm)}
-              className="btn btn-primary"
-            >
-              Solicitar Servicio
-            </button>
+        <div className="card">
+          <button
+            onClick={() => setShowServiceForm(!showServiceForm)}
+            className="btn btn-primary"
+          >
+            Solicitar Servicio
+          </button>
 
-            {showServiceForm && (
-              <form onSubmit={handleCreateService} style={{ marginTop: '20px' }}>
-                <div className="form-group">
-                  <label>Título del servicio</label>
-                  <input
-                    type="text"
-                    value={serviceData.title}
-                    onChange={(e) => setServiceData({ ...serviceData, title: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Descripción</label>
-                  <textarea
-                    value={serviceData.description}
-                    onChange={(e) => setServiceData({ ...serviceData, description: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Fecha programada</label>
-                  <input
-                    type="datetime-local"
-                    value={serviceData.scheduledDate}
-                    onChange={(e) => setServiceData({ ...serviceData, scheduledDate: e.target.value })}
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Horas estimadas</label>
-                  <input
-                    type="number"
-                    value={serviceData.estimatedHours}
-                    onChange={(e) => setServiceData({ ...serviceData, estimatedHours: e.target.value })}
-                    min="1"
-                  />
-                </div>
-                <button type="submit" className="btn btn-success">Enviar Solicitud</button>
-              </form>
-            )}
-          </div>
-        )}
-      </div>
+          {showServiceForm && (
+            <form onSubmit={handleCreateService} style={{ marginTop: '20px' }}>
+              <div className="form-group">
+                <label>Título del servicio</label>
+                <input
+                  type="text"
+                  value={serviceData.title}
+                  onChange={(e) => setServiceData({ ...serviceData, title: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Descripción</label>
+                <textarea
+                  value={serviceData.description}
+                  onChange={(e) => setServiceData({ ...serviceData, description: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Fecha programada</label>
+                <input
+                  type="datetime-local"
+                  value={serviceData.scheduledDate}
+                  onChange={(e) => setServiceData({ ...serviceData, scheduledDate: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label>Horas estimadas</label>
+                <input
+                  type="number"
+                  value={serviceData.estimatedHours}
+                  onChange={(e) => setServiceData({ ...serviceData, estimatedHours: e.target.value })}
+                  min="1"
+                />
+              </div>
+              <button type="submit" className="btn btn-success">Enviar Solicitud</button>
+            </form>
+          )}
+        </div>
+      )}
     </div>
   );
 };
