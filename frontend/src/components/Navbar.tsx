@@ -16,7 +16,7 @@ const Navbar: React.FC = () => {
     <nav className="navbar">
       <div className="navbar-container">
         <Link to="/" className="navbar-brand">
-          Oficios
+          Oficios Ya
         </Link>
         <div className="navbar-menu">
           {user ? (
