@@ -164,29 +164,39 @@ export const mockWorkers: MockWorker[] = [
     _id: 'worker3',
     user: {
       _id: 'user3',
-      name: 'Carlos Rodríguez',
+      name: 'Carlos',
       email: 'carlos@example.com',
       phone: '+1234567892',
       avatar: ''
     },
-    trades: ['albañil', 'constructor'],
-    experience: 12,
-    hourlyRate: 35,
-    description: 'Albañil y constructor con amplia experiencia en construcción y remodelación. Trabajos garantizados.',
+    trades: ['electricista'],
+    experience: 10,
+    hourlyRate: 40,
+    description: 'Soy Carlos, electricista desde hace diez años. Gracias a Oficios Ya, conseguí estabilidad, cursos de capacitación y ahora tengo más de 300 clientes satisfechos. Mi perfil muestra mis calificaciones e historial de servicios.',
     location: {
       address: 'Boulevard Insurgentes 789',
       city: 'Monterrey',
       state: 'Nuevo León',
       coordinates: { lat: 25.6866, lng: -100.3161 }
     },
-    rating: 4.7,
-    totalReviews: 67,
+    rating: 4.9,
+    totalReviews: 312,
     isVerified: true,
     certifications: [
       {
-        name: 'Licencia de Constructor',
-        institution: 'Colegio de Ingenieros',
-        issueDate: '2015-03-10'
+        name: 'Certificación en Instalaciones Eléctricas',
+        institution: 'Instituto de Electricistas Certificados',
+        issueDate: '2018-05-15'
+      },
+      {
+        name: 'Curso de Seguridad Eléctrica',
+        institution: 'Oficios Ya - Capacitación',
+        issueDate: '2023-03-20'
+      },
+      {
+        name: 'Certificación en Energías Renovables',
+        institution: 'Centro de Capacitación Técnica',
+        issueDate: '2022-11-10'
       }
     ],
     portfolio: []
@@ -266,7 +276,7 @@ class MockDataService {
         id: 'user3',
         email: 'carlos@example.com',
         password: '123456',
-        name: 'Carlos Rodríguez',
+        name: 'Carlos',
         phone: '+1234567892',
         role: 'worker' as const,
         isVerified: true
