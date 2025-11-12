@@ -16,13 +16,13 @@ const Navbar: React.FC = () => {
     <nav className="navbar">
       <div className="navbar-container">
         <Link to="/" className="navbar-brand">
-          Trabajadores App
+          Oficios
         </Link>
         <div className="navbar-menu">
           {user ? (
             <>
               <Link to="/search" className="navbar-link">
-                Buscar Trabajadores
+                Buscar Oficios
               </Link>
               {user.role === 'worker' && (
                 <Link to="/worker-dashboard" className="navbar-link">

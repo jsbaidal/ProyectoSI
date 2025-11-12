@@ -47,7 +47,7 @@ const WorkerSearch: React.FC = () => {
         setWorkers(responseData.workers);
       }
     } catch (error) {
-      console.error('Error al buscar trabajadores:', error);
+      console.error('Error al buscar profesionales:', error);
     } finally {
       setLoading(false);
     }
@@ -71,7 +71,7 @@ const WorkerSearch: React.FC = () => {
 
   return (
     <div className="container">
-      <h1>Buscar Trabajadores</h1>
+      <h1>Buscar Oficios</h1>
 
       <div className="card">
         <form onSubmit={handleSubmit}>
@@ -139,12 +139,12 @@ const WorkerSearch: React.FC = () => {
       </div>
 
       {loading ? (
-        <div className="loading">Buscando trabajadores...</div>
+        <div className="loading">Buscando profesionales...</div>
       ) : (
         <div>
           {workers.length === 0 ? (
             <div className="card">
-              <p>No se encontraron trabajadores con los filtros seleccionados.</p>
+              <p>No se encontraron profesionales con los filtros seleccionados.</p>
             </div>
           ) : (
             <div style={{ display: 'grid', gap: '20px' }}>

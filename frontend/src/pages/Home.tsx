@@ -9,7 +9,7 @@ const Home: React.FC = () => {
   return (
     <div className="home">
       <div className="hero">
-        <h1>Encuentra Trabajadores Calificados</h1>
+        <h1>Encuentra Profesionales Calificados</h1>
         <p>Conecta con profesionales verificados en tu área</p>
         {!user && (
           <div className="hero-buttons">
@@ -23,7 +23,7 @@ const Home: React.FC = () => {
         )}
         {user && (
           <Link to="/search" className="btn btn-primary btn-large">
-            Buscar Trabajadores
+            Buscar Oficios
           </Link>
         )}
       </div>
@@ -34,15 +34,15 @@ const Home: React.FC = () => {
           <div className="features-grid">
             <div className="feature-card">
               <h3>🔍 Búsqueda Inteligente</h3>
-              <p>Encuentra trabajadores por oficio, ubicación, experiencia y calificación</p>
+              <p>Encuentra profesionales por oficio, ubicación, experiencia y calificación</p>
             </div>
             <div className="feature-card">
               <h3>✅ Perfiles Verificados</h3>
-              <p>Trabajadores con certificaciones y referencias validadas</p>
+              <p>Profesionales con certificaciones y referencias validadas</p>
             </div>
             <div className="feature-card">
               <h3>💬 Chat Integrado</h3>
-              <p>Comunícate directamente con trabajadores dentro de la app</p>
+              <p>Comunícate directamente con profesionales dentro de la app</p>
             </div>
             <div className="feature-card">
               <h3>💳 Pagos Seguros</h3>
@@ -54,7 +54,7 @@ const Home: React.FC = () => {
             </div>
             <div className="feature-card">
               <h3>👷 Perfiles Profesionales</h3>
-              <p>Los trabajadores muestran su experiencia y trabajos previos</p>
+              <p>Los profesionales muestran su experiencia y trabajos previos</p>
             </div>
           </div>
         </div>
