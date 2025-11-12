@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { mockApi } from '../services/mockApi';
 
@@ -19,15 +19,7 @@ const MyProfile: React.FC = () => {
     address: ''
   });
 
-  useEffect(() => {
-    if (user?.role === 'worker') {
-      fetchWorkerProfile();
-    } else {
-      setLoading(false);
-    }
-  }, [user]);
-
-  const fetchWorkerProfile = async () => {
+  const fetchWorkerProfile = useCallback(async () => {
     try {
       const response = await mockApi.get('/api/workers/me');
       if (response.data.success) {
@@ -52,7 +44,15 @@ const MyProfile: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user?.role === 'worker') {
+      fetchWorkerProfile();
+    } else {
+      setLoading(false);
+    }
+  }, [user, fetchWorkerProfile]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

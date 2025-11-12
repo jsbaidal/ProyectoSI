@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { mockApi } from '../services/mockApi';
 
@@ -33,11 +33,7 @@ const WorkerSearch: React.FC = () => {
     verified: ''
   });
 
-  useEffect(() => {
-    searchWorkers();
-  }, []);
-
-  const searchWorkers = async () => {
+  const searchWorkers = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -55,7 +51,11 @@ const WorkerSearch: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters]);
+
+  useEffect(() => {
+    searchWorkers();
+  }, [searchWorkers]);
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFilters({

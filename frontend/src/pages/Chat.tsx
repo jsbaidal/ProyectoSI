@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { mockApi } from '../services/mockApi';
 import { mockDataService } from '../services/mockData';
-import { useSocket } from '../context/SocketContext';
 import { useAuth } from '../context/AuthContext';
 
 interface Message {
@@ -18,18 +17,17 @@ interface Message {
 
 const Chat: React.FC = () => {
   const { chatId } = useParams<{ chatId: string }>();
-  const { socket } = useSocket();
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    fetchMessages();
-  }, [chatId]);
+  const scrollToBottom = useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, []);
 
-  const fetchMessages = async () => {
+  const fetchMessages = useCallback(async () => {
     try {
       const response = await mockApi.get(`/api/chat/${chatId}/messages`);
       const messagesData = response.data.data as Message[];
@@ -42,11 +40,13 @@ const Chat: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [chatId, scrollToBottom]);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  useEffect(() => {
+    if (chatId) {
+      fetchMessages();
+    }
+  }, [chatId, fetchMessages]);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();

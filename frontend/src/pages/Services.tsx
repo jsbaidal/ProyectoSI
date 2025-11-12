@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { mockApi } from '../services/mockApi';
 import { mockDataService } from '../services/mockData';
@@ -27,11 +27,7 @@ const Services: React.FC = () => {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchServices();
-  }, []);
-
-  const fetchServices = async () => {
+  const fetchServices = useCallback(async () => {
     try {
       const response = user?.role === 'worker' 
         ? await mockApi.get('/api/services/worker')
@@ -63,7 +59,11 @@ const Services: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    fetchServices();
+  }, [fetchServices]);
 
   if (loading) return <div className="loading">Cargando...</div>;
 

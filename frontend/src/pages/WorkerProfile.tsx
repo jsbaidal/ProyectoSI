@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { mockApi } from '../services/mockApi';
 import { useAuth } from '../context/AuthContext';
@@ -51,11 +51,7 @@ const WorkerProfile: React.FC = () => {
     estimatedHours: ''
   });
 
-  useEffect(() => {
-    fetchWorker();
-  }, [id]);
-
-  const fetchWorker = async () => {
+  const fetchWorker = useCallback(async () => {
     try {
       const response = await mockApi.get(`/api/workers/${id}`);
       const workerData = response.data.data as Worker;
@@ -67,7 +63,11 @@ const WorkerProfile: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchWorker();
+  }, [fetchWorker]);
 
   const handleCreateService = async (e: React.FormEvent) => {
     e.preventDefault();
