@@ -51,8 +51,8 @@ const MyProfile: React.FC = () => {
   const fetchCompletedServices = useCallback(async () => {
     try {
       const response = await mockApi.get('/api/services/worker/completed');
-      if (response.data.success) {
-        const services = response.data.data.services as MockService[];
+      if (response.data.success && response.data.data) {
+        const services = (response.data.data as { services: MockService[] }).services;
         setCompletedServices(services.slice(0, 3)); // Mostrar solo los 3 más recientes
       }
     } catch (error) {
